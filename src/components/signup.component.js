@@ -1,7 +1,19 @@
 import React, { Component } from "react";
 
-const regExp = RegExp(
+const EMAIL_PATTERN = RegExp(
     /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+)
+
+const NAME_PATTERN = RegExp(
+    /^[A-Z]{1}[a-z]{2,}$/
+)
+
+const USERNAME_PATTERN = RegExp(
+    /^[A-Za-z0-9_]{3,20}$/
+)
+
+const EXPERIENCE_PATTERN = RegExp(
+    /^[0-9]{0,2}$/
 )
 
 const formValid = ({ isError, ...rest }) => {
@@ -31,17 +43,22 @@ export default class SignUp extends Component {
         super(props)
 
         this.state = {
-            name: '',
+            firstname: '',
+            lastname: '',
+            username: '',
             email: '',
+            experience: '',
             password: '',
             isError: {
-                name: '',
+                firstname: '',
+                lastname: '',
+                username: '',
                 email: '',
+                experience: '',
                 password: ''
             }
         }
     }
-
 
     onSubmit = e => {
         e.preventDefault();
@@ -60,14 +77,30 @@ export default class SignUp extends Component {
         let isError = { ...this.state.isError };
 
         switch (name) {
-            case "name":
-                isError.name =
-                    value.length < 4 ? "Atleast 4 characaters required" : "";
+            case "firstname":
+                isError.firstname = NAME_PATTERN.test(value)
+                    ? ""
+                    : "First Name is invalid";
+                break;
+            case "lastname":
+                isError.lastname = NAME_PATTERN.test(value)
+                    ? ""
+                    : "Last Name is invalid";
+                break;
+            case "username":
+                isError.username = USERNAME_PATTERN.test(value)
+                    ? ""
+                    : "Username is invalid";
                 break;
             case "email":
-                isError.email = regExp.test(value)
+                isError.email = EMAIL_PATTERN.test(value)
                     ? ""
                     : "Email address is invalid";
+                break;
+            case "experience":
+                isError.experience = EXPERIENCE_PATTERN.test(value)
+                    ? ""
+                    : "Experience is invalid";
                 break;
             case "password":
                 isError.password =
@@ -81,28 +114,56 @@ export default class SignUp extends Component {
             isError,
             [name]: value
         })
+
+        
     };
     render() {
         const { isError } = this.state;
-
-
         return (
             <form>
                 <h3>Sign Up</h3>
 
+
                 <div className="form-group">
-                    <label>First name</label>
-                    <input type="text" className="form-control" placeholder="First name" />
+                    <label>First Name</label>
+                    <input
+                        type="text"
+                        className={isError.firstname.length > 0 ? "is-invalid form-control" : "form-control"}
+                        name="firstname"
+                        placeholder="Enter First name"
+                        onChange={this.formValChange}
+                    />
+                    {isError.firstname.length > 0 && (
+                        <span className="invalid-feedback">{isError.firstname}</span>
+                    )}
                 </div>
 
                 <div className="form-group">
-                    <label>Last name</label>
-                    <input type="text" className="form-control" placeholder="Last name" />
+                    <label>Last Name</label>
+                    <input
+                        type="text"
+                        className={isError.lastname.length > 0 ? "is-invalid form-control" : "form-control"}
+                        name="lastname"
+                        placeholder="Enter Last name"
+                        onChange={this.formValChange}
+                    />
+                    {isError.lastname.length > 0 && (
+                        <span className="invalid-feedback">{isError.lastname}</span>
+                    )}
                 </div>
 
                 <div className="form-group">
                     <label>Username</label>
-                    <input type="text" className="form-control" placeholder="Enter Username" />
+                    <input
+                        type="text"
+                        className={isError.username.length > 0 ? "is-invalid form-control" : "form-control"}
+                        name="username"
+                        placeholder="Enter Username"
+                        onChange={this.formValChange}
+                    />
+                    {isError.username.length > 0 && (
+                        <span className="invalid-feedback">{isError.username}</span>
+                    )}
                 </div>
 
                 <div className="form-group">
@@ -124,6 +185,7 @@ export default class SignUp extends Component {
                     <input type="text" className="form-control" placeholder="Enter Gender" />
                 </div>
 
+
                 <div className="form-group">
                     <label>City</label>
                     <input type="text" className="form-control" placeholder="Enter City" />
@@ -136,8 +198,18 @@ export default class SignUp extends Component {
 
                 <div className="form-group">
                     <label>Experience</label>
-                    <input type="text" className="form-control" placeholder="Enter Experience" />
+                    <input
+                        type="text"
+                        className={isError.experience.length > 0 ? "is-invalid form-control" : "form-control"}
+                        name="experience"
+                        placeholder="Enter Experience"
+                        onChange={this.formValChange}
+                    />
+                    {isError.experience.length > 0 && (
+                        <span className="invalid-feedback">{isError.experience}</span>
+                    )}
                 </div>
+
 
                 <div className="form-group">
                     <label>Password</label>
@@ -153,12 +225,11 @@ export default class SignUp extends Component {
                     )}
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block">Sign Up</button>
+                <button type="submit" className="btn btn-primary btn-block" onClick="onSubmit()">Sign Up</button>
                 <p className="forgot-password text-right">
                     Already registered <a href="#">sign in?</a>
                 </p>
             </form>
-
 
         );
     }
