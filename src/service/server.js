@@ -25,6 +25,18 @@ app.get('/listUsers', function (req, res) {
    });
 })
 
+app.get('/getEmployee/:empid', function (req, res) {
+   var id = req.params.empid;
+
+   fs.readFile(__dirname + "/data/" + "users.json", 'utf8', function (err, data) {
+      data = JSON.parse(data);
+      let emp = data.find(record => record.EmpId === parseInt(id));
+      console.log(emp);
+      res.header('Access-Control-Allow-Credentials', true);
+      res.end(JSON.stringify(emp));
+   });
+})
+
 app.post('/addUser', function (req, res) {
    // First read existing users.
    fs.readFile(__dirname + "/data/" + "users.json", 'utf8', function (err, data) {
@@ -55,6 +67,32 @@ app.post('/addUser', function (req, res) {
          });
          res.end("New Employee added successfully");
       }
+   });
+});
+
+app.post('/editUser', function (req, res) {
+   // First read existing users.
+   var empId = req.body.employee.EmpId;
+   fs.readFile(__dirname + "/data/" + "users.json", 'utf8', function (err, data) {
+      data = JSON.parse(data);
+      if (data != undefined && data.length > 0) {
+         let emp = data.find(record => record.EmpId === parseInt(empId));
+         if (emp != undefined) {
+            
+            data = RemoveNode(data,req.body.employee.Username);      
+            data.push(req.body.employee);
+   
+            let json = JSON.stringify(data);
+            fs.writeFile(__dirname + "/data/" + "users.json", json, function (err) {
+               console.log(data);
+            });
+            res.end("Employee updated successfully");
+         }
+         else {   
+            res.end("Employee not found");
+         }     
+      }
+      res.end("Employee not found");    
    });
 });
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import $ from "jquery"
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const axios = require('axios')
 export default class EmployeeView extends Component {
@@ -12,6 +12,12 @@ export default class EmployeeView extends Component {
             items: []
         };
     }
+
+    editemployee = (empid) => {
+        this.props.history.push({
+            pathname: '/editEmployee/' + empid
+        });
+    };
 
     fetchEmployee() {
         axios.get('http://localhost:8081/listUsers', {
@@ -40,8 +46,7 @@ export default class EmployeeView extends Component {
 
         var EmpId = e.target.attributes.getNamedItem('data-empid').value;
         var Username = e.target.attributes.getNamedItem('data-username').value;
-        alert(EmpId + "-" + Username);
-
+        
         axios.post('http://localhost:8081/deleteUser', {
             username: Username
         }).then(() => {
@@ -50,13 +55,6 @@ export default class EmployeeView extends Component {
         })
             .catch(err => console.log(err));;
 
-    };
-
-    onEdit = e => {
-
-        var EmpId = e.target.attributes.getNamedItem('data-empid').value;
-        var Username = e.target.attributes.getNamedItem('data-username').value;
-        alert(EmpId + "-" + Username);
     };
 
 
@@ -69,10 +67,14 @@ export default class EmployeeView extends Component {
         } else {
 
             return (
+
+
                 <div className="auth-wrapper" >
                     <div className="auth-inner-full"  >
                         <h3>Employee List</h3>
-
+                        <Link to="/addEmployee" align="right"><button type="button" className="btn btn-success" > Add Employee </button></Link>
+                        <br />
+                        <br />
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -100,7 +102,7 @@ export default class EmployeeView extends Component {
                                             <td>{item.City}</td>
                                             <td>{item.Designation}</td>
                                             <td>{item.Experience}</td>
-                                            <td><button type="button" id="btnEdit" class="btn btn-warning btn-sm" data-username={item.Username} data-empid={item.EmpId} onClick={this.onEdit}>  Edit</button></td>
+                                            <td><button type="button" id="btnEdit" class="btn btn-warning btn-sm" data-username={item.Username} data-empid={item.EmpId} onClick={() => { this.editemployee(item.EmpId) }}>  Edit</button></td>
                                             <td><button type="button" id="btnDelete" class="btn btn-danger btn-sm" data-username={item.Username} data-empid={item.EmpId} onClick={this.onDelete}>Delete</button></td>
                                         </tr>
                                     ))}
